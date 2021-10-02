@@ -1,5 +1,5 @@
 trigger:
-    branches:
+  branches:
     include:
     - master
     - story/perf/*
@@ -9,4 +9,13 @@ trigger:
 pool: ubuntu-latest
 
 steps:
-- bash
+- bash: |
+  displayName: Read branch name
+- bash: |
+  displayName: Create reproducible test archive
+- bash: |
+  displayName: Publish test to build
+- bash: |
+  Run CI test {{testName}} from archive
+- bash: |
+  Run Regression CI test
