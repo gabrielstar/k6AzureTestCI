@@ -12,7 +12,7 @@ pool:
 variables:
   ${{ if eq(variables['Build.Reason'], 'PullRequest') }}: 
     mode: regression
-  ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+  ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}:
     mode: ci
 steps:
 - bash: |
