@@ -2,7 +2,7 @@ import http from "k6/http";
 import { check, group, sleep } from "k6";
 import tagForTest from "./module1.js";
 
-const ciOptions = {
+const ci = {
   scenarios: {
     ci: {
       executor: 'shared-iterations',
@@ -10,7 +10,7 @@ const ciOptions = {
     },
   },
 };
-const regressionOptions = {
+const regression = {
   scenarios: {
     regression: {
       executor: 'shared-iterations',
@@ -19,7 +19,7 @@ const regressionOptions = {
   },
 };
 
-export const options = eval(__ENV.mode);
+export const options = eval(__ENV.mode || "regression");
 export function ci() {
   eval(`${__ENV.exec}()`);
 }
