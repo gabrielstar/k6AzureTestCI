@@ -11,7 +11,8 @@ pool:
 
 steps:
 - bash: |
-
+    echo $(Build.SourceBranchName)
+    echo $(Build.SourceBranch)
   displayName: Read branch name
 
 - bash: |
