@@ -6,7 +6,8 @@ trigger:
     exclude:
     - develop
 
-pool: ubuntu-latest
+pool: 
+  vmImage: ubuntu-latest
 
 steps:
 - bash: |
@@ -22,7 +23,9 @@ steps:
   displayName: Publish test to build
 
 - bash: |
+  
   displayName: Run CI test {{testName}} from archive
 
 - bash: |
+  
   displayName: Run Regression CI test
