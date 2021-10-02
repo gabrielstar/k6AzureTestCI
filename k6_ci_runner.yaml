@@ -18,6 +18,7 @@ steps:
 - bash: |
     echo "We will us '$(Build.SourceBranchName)' as k6 exec name"
     echo "##vso[task.setvariable variable=k6exec]$(Build.SourceBranchName)" #alias really
+    echo "Build because of $(Build.Reason)"
   displayName: Set k6 exec function
 
 - task: k6-load-test@0
