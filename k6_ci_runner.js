@@ -20,9 +20,9 @@ const regression = {
 };
 
 export const options = eval(__ENV.mode || "regression");
-export function ci() {
+export function ciRunner() {
   eval(`${__ENV.exec}()`);
 }
-export function regression() {
+export function regressionRunner() {
   //all really - iterate
 }
