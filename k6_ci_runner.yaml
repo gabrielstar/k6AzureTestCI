@@ -6,6 +6,10 @@ trigger:
     exclude:
     - develop
 
+pr:
+  - master
+  - story/perf/*
+
 pool: 
   vmImage: ubuntu-latest
 
