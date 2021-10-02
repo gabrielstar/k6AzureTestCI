@@ -16,9 +16,9 @@ steps:
   displayName: Set k6 exec function
 
 - task: k6-load-test@0
-    inputs:
-      filename: k6Runner.js
-      args: -e mode=CI -e exec=$(k6exec)
+  inputs:
+    filename: k6Runner.js
+    args: -e mode=CI -e exec=$(k6exec)
 
   displayName: Create reproducible test archive
 
