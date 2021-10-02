@@ -10,12 +10,19 @@ pool: ubuntu-latest
 
 steps:
 - bash: |
+
   displayName: Read branch name
+
 - bash: |
+
   displayName: Create reproducible test archive
+
 - bash: |
+
   displayName: Publish test to build
+
 - bash: |
-  Run CI test {{testName}} from archive
+  displayName: Run CI test {{testName}} from archive
+
 - bash: |
-  Run Regression CI test
+  displayName: Run Regression CI test
