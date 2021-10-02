@@ -11,11 +11,14 @@ pool:
 
 steps:
 - bash: |
-    echo $(Build.SourceBranchName)
-    echo $(Build.SourceBranch)
-  displayName: Read branch name
+    echo "We will us '$(Build.SourceBranchName)' as k6 exec name"
+    echo "##vso[task.setvariable variable=k6exec]$(Build.SourceBranchName)" #alias really
+  displayName: Set k6 exec function
 
-- bash: |
+- task: k6-load-test@0
+  inputs:
+    filename: k6_ci_runner.js
+    args: -e mode=ci -e exec=$(k6exec)
 
   displayName: Create reproducible test archive
 
