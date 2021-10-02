@@ -9,6 +9,11 @@ trigger:
 pool: 
   vmImage: ubuntu-latest
 
+variables:
+  ${{ if eq(variables['Build.Reason'], 'PullRequest') }}: 
+    mode: regression
+  ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
+    mode: ci
 steps:
 - bash: |
     echo "We will us '$(Build.SourceBranchName)' as k6 exec name"
@@ -18,7 +23,7 @@ steps:
 - task: k6-load-test@0
   inputs:
     filename: k6_ci_runner.js
-    args: -e mode=ci -e exec=$(k6exec)
+    args: -e mode=$(mode) -e exec=$(k6exec)
 
   displayName: Create reproducible test archive
 
