@@ -1,0 +1,12 @@
+trigger:
+    branches:
+    include:
+    - master
+    - story/perf/*
+    exclude:
+    - develop
+
+pool: ubuntu-latest
+
+steps:
+- bash
