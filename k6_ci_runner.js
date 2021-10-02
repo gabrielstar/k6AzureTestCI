@@ -2,8 +2,9 @@ import http from "k6/http";
 import { check, group, sleep } from "k6";
 import tagForTest from "./module1.js"; //use default function
 import tagForTest2 from "./module1.js"; //use default function
+import myNewTest from './newmodule.js';
 
-const regressionTests = ['tagForTest','tagForTest2'];
+const regressionTests = ['tagForTest','tagForTest2','myNewTest'];
 
 const testToRun = __ENV.exec || 'tagForTest';
 const optionsToUse = __ENV.mode || "regression" ; // regression|ci
