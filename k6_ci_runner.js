@@ -16,14 +16,17 @@ const optionsToUse = __ENV.mode || "ci"; // regression|ci
 let testToRunFound = regressionTests.find((test) => test.name === testToRun);
 let groupName;
 
-if (testToRunFound !== undefined) {
-  groupName = `${testToRunFound.test.name || 'default' }:${testToRunFound.module}`
-} else {
-  fail(
-    `Exec() function ${testToRun}() for your branch not found. Are you sure you defined your branch for Test CI well?`
-  );
+if (optionsToUse === "ci") {
+  if (testToRunFound !== undefined) {
+    groupName = `${testToRunFound.test.name || "default"}:${
+      testToRunFound.module
+    }`;
+  } else {
+    fail(
+      `Exec() function ${testToRun}() for your branch not found. Are you sure you defined your branch for Test CI well?`
+    );
+  }
 }
-
 
 const thresholds = {
   http_req_failed: ["rate===0.0"], // http errors should be 0%
