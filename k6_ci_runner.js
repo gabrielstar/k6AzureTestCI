@@ -6,7 +6,7 @@ const ci = {
   scenarios: {
     ci: {
       executor: 'shared-iterations',
-      exec: "ci",
+      exec: "ciRunner",
     },
   },
 };
@@ -14,7 +14,7 @@ const regression = {
   scenarios: {
     regression: {
       executor: 'shared-iterations',
-      exec: "regression",
+      exec: "regressionRunner",
     },
   },
 };
