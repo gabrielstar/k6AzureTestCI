@@ -2,6 +2,9 @@ import http from "k6/http";
 import { check, group, sleep } from "k6";
 import tagForTest from "./module1.js";
 
+const testToRun = __ENV.exec || 'tagForTest'
+const optionsToUse = __ENV.mode || "ci"
+
 const ci = {
   scenarios: {
     ci: {
@@ -19,9 +22,11 @@ const regression = {
   },
 };
 
-export const options = eval(__ENV.mode || "regression");
+export const options = eval(optionsToUse);
 export function ciRunner() {
-  eval(`${__ENV.exec}()`);
+  group(`${testToRun}`, function() {
+    eval(`${__ENV.exec}()`);
+  });
 }
 export function regressionRunner() {
   //all really - iterate
