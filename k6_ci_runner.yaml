@@ -19,13 +19,13 @@ variables:
   ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}:
     mode: ci
 steps:
-${{ if eq(variables['Build.Reason'], 'IndividualCI') }}:
+- ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}:
   - bash: |
       echo "We will us '$(Build.SourceBranchName)' as k6 exec name"
       echo "##vso[task.setvariable variable=k6exec]$(Build.SourceBranchName)" #alias really
       echo "Build because of $(Build.Reason)"
     displayName: Set k6 exec function
-${{ if eq(variables['Build.Reason'], 'PullRequest') }}: 
+- ${{ if eq(variables['Build.Reason'], 'PullRequest') }}: 
   - bash: |
       echo "We will us '$(Build.SourceBranchName)' as k6 exec name"
       echo "##vso[task.setvariable variable=k6exec]regression" #alias really
