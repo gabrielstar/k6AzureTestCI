@@ -1,9 +1,12 @@
 import http from "k6/http";
 import { check, group, sleep } from "k6";
-import tagForTest from "./module1.js";
+import tagForTest from "./module1.js"; //use default function
+import tagForTest2 from "./module1.js"; //use default function
 
-const testToRun = __ENV.exec || 'tagForTest'
-const optionsToUse = __ENV.mode || "ci"
+const regressionTests = ['tagForTest','tagForTest2'];
+
+const testToRun = __ENV.exec || 'tagForTest';
+const optionsToUse = __ENV.mode || "regression" ; // regression|ci
 
 const ci = {
   scenarios: {
@@ -29,5 +32,10 @@ export function ciRunner() {
   });
 }
 export function regressionRunner() {
-  //all really - iterate
+  regressionTests.forEach((test)=>{
+    group(`${test}`, function() {
+      console.log(`Running ${test}`);
+      Function.call(test);
+    });
+  })
 }
