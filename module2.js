@@ -11,6 +11,6 @@ export function module2Test(){
 }
 
 //each module has default export too - for CI
-export default function (){ 
+export default function anothername(){ 
   module2Test();
 }
