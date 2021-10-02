@@ -19,7 +19,7 @@ const regressionOptions = {
   },
 };
 
-export const options = eval(__ENV.mode || "regressionOptions");
+export const options = eval(__ENV.mode);
 export function ci() {
   eval(`${__ENV.exec}()`);
 }
