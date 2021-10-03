@@ -33,9 +33,9 @@ steps:
       echo "##vso[task.setvariable variable=k6exec]regression" #alias really
       echo "Build because of $(Build.Reason)"
     displayName: Set k6 exec function
-  - bash: |
-      ls -alh
-      chown k6:k6 $(pwd)
+- bash: |
+    ls -alh
+    chown k6:k6 $(pwd)
 - pwsh: |
       Write-Host "Running:"
       Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O $(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)'"
@@ -43,8 +43,8 @@ steps:
       Write-Host "Produced:"
       ls
   displayName: Create test archive 
-  - bash: |
-      ls -alh
+- bash: |
+    ls -alh
 - task: k6-load-test@0
   condition: succeeded()
   inputs:
