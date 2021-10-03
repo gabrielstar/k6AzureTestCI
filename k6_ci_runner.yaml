@@ -55,7 +55,7 @@ steps:
 - task: k6-load-test@0
   condition: succeeded()
   inputs:
-    filename: $(archiveTestFile)
+    filename: $(inputTestFile)
     args: -e mode=$(mode) -e exec=$(k6exec) --out csv=results.csv
   displayName: Run archived test
 
