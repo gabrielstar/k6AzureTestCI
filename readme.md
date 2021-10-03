@@ -58,5 +58,6 @@ const regressionTests = [
 
 6. Now continue working on your code, on every commit module_x() is fired, on every PR all functions from regressionTests( are run).
 
+7. In the pipeline an archive (.tar) is published that can be downloaded andused to reproduce issues on yours and devlopers pc.
 
-It is actually simpler than it looks. Good Luck.
+It is actually simpler than it looks and saves loads of time Good Luck.
