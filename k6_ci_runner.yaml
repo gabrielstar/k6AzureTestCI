@@ -35,14 +35,15 @@ steps:
     displayName: Set k6 exec function
 - bash: |
     #prevent docker/host mount issues
+    mkdir -p ($pwd)/k6
     ls -alh
     sudo groupadd -g 12345 k6
     sudo useradd -u 12345 k6 -g k6
-    chown k6:k6 $(pwd)
+    chown k6:k6 $(pwd)/k6
 - pwsh: |
       Write-Host "Running:"
-      Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O $(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)'"
-      docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O $(archiveTestFile)  --include-system-env-vars=false  $(inputTestFile)'
+      Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O k6/$(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)'"
+      docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O k6/$(archiveTestFile)  --include-system-env-vars=false  $(inputTestFile)'
       Write-Host "Produced:"
       ls
   displayName: Create test archive 
