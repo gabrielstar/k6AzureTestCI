@@ -11,8 +11,6 @@ trigger:
     include:
       - master
       - story/perf/*
-    exclude:
-      - master
 pr:
   - story/perf/*
 
