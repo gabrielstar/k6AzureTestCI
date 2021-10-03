@@ -14,6 +14,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
+  testFile: k6_ci_runner.js
   ${{ if eq(variables['Build.Reason'], 'PullRequest') }}: 
     mode: regression
   ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}:
@@ -31,12 +32,19 @@ steps:
       echo "##vso[task.setvariable variable=k6exec]regression" #alias really
       echo "Build because of $(Build.Reason)"
     displayName: Set k6 exec function
+
+- pwsh: |
+    	Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O test.tar  --include-system-env-vars=false --out csv=/home/k6/out.csv $(testFile)"
+      docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O test.tar --include-system-env-vars=false --out csv=/home/k6/out.csv $(testFile)
+      ls
+  displayName: Create test package 
+
 - task: k6-load-test@0
   inputs:
-    filename: k6_ci_runner.js
+    filename: $(testFile)
     args: -e mode=$(mode) -e exec=$(k6exec)
 
-  displayName: Create reproducible test archive
+  displayName: Run test
 
 - bash: |
 
