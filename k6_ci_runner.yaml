@@ -50,11 +50,12 @@ steps:
   displayName: Create test archive 
 - bash: |
     ls -alh k6
+    cp k6/* .
     
 - task: k6-load-test@0
   condition: succeeded()
   inputs:
-    filename: $(dockerTestDir)/$(archiveTestFile)
+    filename: $(archiveTestFile)
     args: -e mode=$(mode) -e exec=$(k6exec) --out csv=results.csv
   displayName: Run archived test
 
