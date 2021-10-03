@@ -36,8 +36,8 @@ steps:
 
 - pwsh: |
       Write-Host "Running:"
-      Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O $(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)"
-      docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O $(archiveTestFile)  --include-system-env-vars=false  $(inputTestFile)
+      Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O $(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)'"
+      docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O $(archiveTestFile)  --include-system-env-vars=false  $(inputTestFile)'
       Write-Host "Produced:"
       ls
   displayName: Create test archive 
