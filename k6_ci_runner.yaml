@@ -16,6 +16,7 @@ pool:
 variables:
   inputTestFile: k6_ci_runner.js
   archiveTestFile: $(inputTestFile).tar
+  dockerTestDir: k6
   ${{ if eq(variables['Build.Reason'], 'PullRequest') }}: 
     mode: regression
   ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}:
@@ -35,7 +36,7 @@ steps:
     displayName: Set k6 exec function
 - bash: |
     #prevent docker/host mount issues
-    mkdir -p ($pwd)/k6
+    mkdir -p $(pwd)/k6
     ls -alh
     sudo groupadd -g 12345 k6
     sudo useradd -u 12345 k6 -g k6
