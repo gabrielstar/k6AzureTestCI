@@ -38,10 +38,10 @@ steps:
     #prevent docker/host mount issues
     mkdir -p $(pwd)/$(dockerTestDir)
     ls -alh
-    #sudo groupadd -g 12345 k6
-    #sudo useradd -u 12345 k6 -g k6
-    #sudo chown k6:k6 $(pwd)/$(dockerTestDir)
-    chmod -R 0777  $(pwd)/$(dockerTestDir)
+    sudo groupadd -g 12345 k6
+    sudo useradd -u 12345 k6 -g k6
+    sudo chown k6:k6 $(pwd)/$(dockerTestDir)
+    #chmod -R 0777  $(pwd)/$(dockerTestDir)
 - pwsh: |
       Write-Host "Running:"
       Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O $(dockerTestDir)/$(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)'"
@@ -50,24 +50,25 @@ steps:
       ls
   displayName: Create test archive 
 - bash: |
-    ls -alh k7
-    cp k7/* .
+    ls -alh $(dockerTestDir)
+    cp $(dockerTestDir)/* .
     
 - task: k6-load-test@0
+  condition: succeeded()
   inputs:
-    filename: $(inputTestFile)
-    args: -e mode=$(mode) -e exec=$(k6exec)
+    filename: $(dockerTestDir)/$(archiveTestFile) 
+    args: -e mode=$(mode) -e exec=$(k6exec) --out csv=results.csv
   displayName: Run archived test
 
 - task: PublishPipelineArtifact@1
-  condition: succeeded()
+  condition: always()
   inputs:
     path: $(dockerTestDir)/$(archiveTestFile)
     artifact: $(archiveTestFile)
   displayName: Publish test archive to build
 
 - task: PublishPipelineArtifact@1
-  condition: succeeded()
+  condition: always()
   inputs:
     path: results.csv
     artifact: results.csv
