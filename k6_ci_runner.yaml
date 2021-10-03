@@ -12,9 +12,8 @@ trigger:
       - master
       - story/perf/*
     exclude:
-      - develop
+      - master
 pr:
-  - master
   - story/perf/*
 
 pool:
@@ -27,10 +26,10 @@ variables:
   ${{ if or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'Schedule')) }}:
     mode: regression
     k6exec: regression
-  ${{ if and(eq(variables['Build.Reason'], 'IndividualCI'),ne(variables['Build.SourceBranchName'], 'regression')) }}:
+  ${{ if and(eq(variables['Build.Reason'], 'IndividualCI'),and(ne(variables['Build.SourceBranchName'], 'regression'),ne(variables['Build.SourceBranchName'], 'master'))) }}:
     mode: ci
     k6exec: $(Build.SourceBranchName)
-  ${{ if and(eq(variables['Build.Reason'], 'IndividualCI'),eq(variables['Build.SourceBranchName'], 'regression')) }}:
+  ${{ if and(eq(variables['Build.Reason'], 'IndividualCI'),or(eq(variables['Build.SourceBranchName'], 'regression'),eq(variables['Build.SourceBranchName'], 'master')) }}:
     mode: regression
     k6exec: regression
 
