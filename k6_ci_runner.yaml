@@ -38,8 +38,8 @@ steps:
     #prevent docker/host mount issues
     mkdir -p $(pwd)/$(dockerTestDir)
     ls -alh
-    sudo groupadd -g 12345 k6
-    sudo useradd -u 12345 k6 -g k6
+    #sudo groupadd -g 12345 k6
+    #sudo useradd -u 12345 k6 -g k6
     sudo chown k6:k6 $(pwd)/k6
 - pwsh: |
       Write-Host "Running:"
