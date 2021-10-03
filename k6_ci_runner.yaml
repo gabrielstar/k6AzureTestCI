@@ -16,38 +16,31 @@ pool:
 variables:
   inputTestFile: k6_ci_runner.js
   archiveTestFile: $(inputTestFile).tar
-  dockerTestDir: k7
+  dockerTestDir: k6_tests
   ${{ if eq(variables['Build.Reason'], 'PullRequest') }}: 
     mode: regression
+    k6exec: regression
   ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}:
     mode: ci
+    k6exec: $(Build.SourceBranchName)
+
 steps:
-- ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}:
-  - bash: |
-      echo "We will us '$(Build.SourceBranchName)' as k6 exec name"
-      echo "##vso[task.setvariable variable=k6exec]$(Build.SourceBranchName)" #alias really
-      echo "Build because of $(Build.Reason)"
-    displayName: Set k6 exec function
-- ${{ if eq(variables['Build.Reason'], 'PullRequest') }}: 
-  - bash: |
-      echo "We will us '$(Build.SourceBranchName)' as k6 exec name"
-      echo "##vso[task.setvariable variable=k6exec]regression" #alias really
-      echo "Build because of $(Build.Reason)"
-    displayName: Set k6 exec function
 - bash: |
-    #prevent docker/host mount issues
-    mkdir -p $(pwd)/$(dockerTestDir)
-    ls -alh
+    echo "We will us '$(k6exec)' as k6 exec function"
+    echo "Build triggered because of $(Build.Reason)"
+  displayName: Auto detect test to run
+- bash: |
+    mkdir -p $(pwd)/$(dockerTestDir) && ls -alh
     sudo groupadd -g 12345 k6
     sudo useradd -u 12345 k6 -g k6
-    sudo chown k6:k6 $(pwd)/$(dockerTestDir)
-    #chmod -R 0777  $(pwd)/$(dockerTestDir)
+    sudo chown k6:k6 $(pwd)/$(dockerTestDir) #to prevent write issues in container 
+  displayName: Configure docker permissions
 - pwsh: |
+      $command = "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O $(dockerTestDir)/$(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)'"
       Write-Host "Running:"
-      Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O $(dockerTestDir)/$(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)'"
-      docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O $(dockerTestDir)/$(archiveTestFile)  --include-system-env-vars=false  $(inputTestFile)'
-      Write-Host "Produced:"
-      ls
+      Write-Host $command
+      Invoke-Expression $command
+      Write-Host "Files:"; ls
   displayName: Create test archive 
 - bash: |
     ls -alh $(dockerTestDir)
