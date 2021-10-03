@@ -27,7 +27,7 @@ variables:
   ${{ if and(eq(variables['Build.Reason'], 'IndividualCI'),and(ne(variables['Build.SourceBranchName'], 'regression'),ne(variables['Build.SourceBranchName'], 'master'))) }}:
     mode: ci
     k6exec: $(Build.SourceBranchName)
-  ${{ if and(eq(variables['Build.SourceBranchName'], 'regression'),eq(variables['Build.SourceBranchName'], 'master')) }}:
+  ${{ if or(eq(variables['Build.SourceBranchName'], 'regression'),eq(variables['Build.SourceBranchName'], 'master')) }}:
     mode: regression
     k6exec: regression
 
