@@ -40,7 +40,8 @@ steps:
     ls -alh
     #sudo groupadd -g 12345 k6
     #sudo useradd -u 12345 k6 -g k6
-    sudo chown k6:k6 $(pwd)/k6
+    #sudo chown k6:k6 $(pwd)/$(dockerTestDir)
+    chmod -R 0777  $(pwd)/$(dockerTestDir)
 - pwsh: |
       Write-Host "Running:"
       Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O $(dockerTestDir)/$(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)'"
