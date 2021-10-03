@@ -12,6 +12,7 @@ trigger:
       - master
       - story/perf/*
 pr:
+  - master
   - story/perf/*
 
 pool:
@@ -33,7 +34,7 @@ variables:
 
 steps:
   - bash: |
-      echo "We will us '$(k6exec)' as k6 exec function"
+      echo "We will us '$(k6exec)' as k6 exec function."
       echo "Build triggered because of $(Build.Reason)"
       echo "We will use $(archiveTestFile) as package name"
     displayName: Auto detect test to run
