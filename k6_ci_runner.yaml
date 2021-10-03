@@ -39,6 +39,7 @@ steps:
   - bash: |
       echo "We will us '$(k6exec)' as k6 exec function"
       echo "Build triggered because of $(Build.Reason)"
+      echo "We will use $(archiveTestFile) as package name"
     displayName: Auto detect test to run
   - bash: |
       mkdir -p $(pwd)/$(dockerTestDir) && ls -alh
