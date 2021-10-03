@@ -49,7 +49,7 @@ steps:
       ls
   displayName: Create test archive 
 - bash: |
-    ls -alh
+    ls -alh k6
     
 - task: k6-load-test@0
   condition: succeeded()
