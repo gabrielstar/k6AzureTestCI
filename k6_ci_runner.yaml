@@ -34,10 +34,10 @@ steps:
     displayName: Set k6 exec function
 
 - pwsh: |
-  Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O test.tar --include-system-env-vars=false --out csv=/home/k6/out.csv $(testFile)"
-  
-  docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O test.tar --include-system-env-vars=false --out csv=/home/k6/out.csv $(testFile)
-  ls
+      Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O test.tar --include-system-env-vars=false --out csv=/home/k6/out.csv $(testFile)"
+      
+      docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O test.tar --include-system-env-vars=false --out csv=/home/k6/out.csv $(testFile)
+      ls
 
   displayName: Create test package 
 
