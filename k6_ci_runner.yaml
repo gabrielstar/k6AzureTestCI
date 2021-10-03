@@ -23,7 +23,7 @@ pool:
 variables:
   inputTestFile: k6_ci_runner.js
   archiveTestFileRawName: $(inputTestFile)-$(Build.SourceBranch).tar
-  archiveTestFile: $[replace(variables['archiveTestFileRawName'],"/",":")]
+  archiveTestFile: $[replace(variables['archiveTestFileRawName'],"\/",":")]
   dockerTestDir: k6_tests
   ${{ if or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'Schedule')) }}:
     mode: regression
