@@ -34,7 +34,10 @@ steps:
       echo "Build because of $(Build.Reason)"
     displayName: Set k6 exec function
 - bash: |
+    #prevent docker/host mount issues
     ls -alh
+    sudo groupadd -g 12345 k6
+    sudo useradd -u 12345 k6 -g k6
     chown k6:k6 $(pwd)
 - pwsh: |
       Write-Host "Running:"
