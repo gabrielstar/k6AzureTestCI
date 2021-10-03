@@ -35,8 +35,10 @@ steps:
 
 - pwsh: |
   Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O test.tar --include-system-env-vars=false --out csv=/home/k6/out.csv $(testFile)"
+  
   docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O test.tar --include-system-env-vars=false --out csv=/home/k6/out.csv $(testFile)
   ls
+
   displayName: Create test package 
 
 - task: k6-load-test@0
