@@ -33,7 +33,7 @@ variables:
   ${{ if and(eq(variables['Build.Reason'], 'IndividualCI'),eq(variables['Build.SourceBranchName'], 'regression')) }}:
     mode: regression
     k6exec: regression
-    
+
 steps:
   - bash: |
       echo "We will us '$(k6exec)' as k6 exec function"
@@ -46,7 +46,7 @@ steps:
       sudo chown k6:k6 $(pwd)/$(dockerTestDir) #to prevent write issues in container
     displayName: Configure docker permissions
   - pwsh: |
-      $command = "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O $(dockerTestDir)/$(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)'"
+      $command = "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -e mode=$(mode) -e exec=$(k6exec) -O $(dockerTestDir)/$(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)'"
       Write-Host "Running:"
       Write-Host $command
       Invoke-Expression $command
