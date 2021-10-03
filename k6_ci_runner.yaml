@@ -50,7 +50,7 @@ steps:
       Write-Host "Running:"
       Write-Host $command
       Invoke-Expression $command
-      Write-Host "Files:"; ls
+      Write-Host "Files:"; ls; ls k6_tests;
     displayName: Create test archive
 
   - task: k6-load-test@0
