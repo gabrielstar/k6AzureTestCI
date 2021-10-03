@@ -1,35 +1,76 @@
-trigger:
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daly midnight build for regression
   branches:
     include:
     - master
-    - story/perf/*
-    exclude:
-    - develop
+  always: true
 
-pool: 
+trigger:
+  branches:
+    include:
+      - master
+      - story/perf/*
+    exclude:
+      - develop
+pr:
+  - master
+  - story/perf/*
+
+pool:
   vmImage: ubuntu-latest
 
+variables:
+  inputTestFile: k6_ci_runner.js
+  archiveTestFile: $(inputTestFile)-$(Build.BuildId).tar
+  dockerTestDir: k6_tests
+  ${{ if or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'Schedule')) }}:
+    mode: regression
+    k6exec: regression
+  ${{ if and(eq(variables['Build.Reason'], 'IndividualCI'),ne(variables['Build.SourceBranchName'], 'regression')) }}:
+    mode: ci
+    k6exec: $(Build.SourceBranchName)
+  ${{ if and(eq(variables['Build.Reason'], 'IndividualCI'),eq(variables['Build.SourceBranchName'], 'regression')) }}:
+    mode: regression
+    k6exec: regression
+
 steps:
-- bash: |
-    echo "We will us '$(Build.SourceBranchName)' as k6 exec name"
-    echo "##vso[task.setvariable variable=k6exec]$(Build.SourceBranchName)" #alias really
-  displayName: Set k6 exec function
+  - bash: |
+      echo "We will us '$(k6exec)' as k6 exec function"
+      echo "Build triggered because of $(Build.Reason)"
+      echo "We will use $(archiveTestFile) as package name"
+    displayName: Auto detect test to run
+  - bash: |
+      mkdir -p $(pwd)/$(dockerTestDir) && ls -alh
+      sudo groupadd -g 12345 k6
+      sudo useradd -u 12345 k6 -g k6
+      sudo chown k6:k6 $(pwd)/$(dockerTestDir) #to prevent write issues in container
+    displayName: Configure docker permissions
+  - pwsh: |
+      $command = "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -e mode=$(mode) -e exec=$(k6exec) -O $(dockerTestDir)/$(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)'"
+      Write-Host "Running:"
+      Write-Host $command
+      Invoke-Expression $command
+      Write-Host "Files:"; ls; ls k6_tests;
+    displayName: Create test archive
 
-- task: k6-load-test@0
-  inputs:
-    filename: k6_ci_runner.js
-    args: -e mode=ci -e exec=$(k6exec)
+  - task: k6-load-test@0
+    condition: succeeded()
+    inputs:
+      filename: $(dockerTestDir)/$(archiveTestFile)
+      args: -e mode=$(mode) -e exec=$(k6exec) --out csv=results.csv
+    displayName: Run archived test
 
-  displayName: Create reproducible test archive
+  - task: PublishPipelineArtifact@1
+    condition: always()
+    inputs:
+      path: $(dockerTestDir)/$(archiveTestFile)
+      artifact: $(archiveTestFile)
+    displayName: Publish test archive to build
 
-- bash: |
-
-  displayName: Publish test to build
-
-- bash: |
-  
-  displayName: Run CI test {{testName}} from archive
-
-- bash: |
-  
-  displayName: Run Regression CI test
+  - task: PublishPipelineArtifact@1
+    condition: always()
+    inputs:
+      path: results.csv
+      artifact: results.csv
+    displayName: Publish test results to build

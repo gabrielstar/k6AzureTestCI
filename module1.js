@@ -11,6 +11,6 @@ export function module1Test(){
 }
 
 //each module has default export too
-export default function (){ 
+export default function somename(){ 
   module1Test();
 }
