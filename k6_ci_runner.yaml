@@ -14,7 +14,8 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  testFile: k6_ci_runner.js
+  inputTestFile: k6_ci_runner.js
+  archiveTestFile: $(inputTestFile).tar
   ${{ if eq(variables['Build.Reason'], 'PullRequest') }}: 
     mode: regression
   ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}:
@@ -34,28 +35,27 @@ steps:
     displayName: Set k6 exec function
 
 - pwsh: |
-      Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O test.tar --include-system-env-vars=false --out csv=/home/k6/out.csv $(testFile)"
-      
-      docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O test.tar --include-system-env-vars=false --out csv=/home/k6/out.csv $(testFile)
+      Write-Host "Running:"
+      Write-Host "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O $(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)"
+      docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c k6 archive -O $(archiveTestFile)  --include-system-env-vars=false  $(inputTestFile)
+      Write-Host "Produced:"
       ls
-
-  displayName: Create test package 
+  displayName: Create test archive 
 
 - task: k6-load-test@0
   inputs:
-    filename: $(testFile)
-    args: -e mode=$(mode) -e exec=$(k6exec)
+    filename: $(archiveTestFile)
+    args: -e mode=$(mode) -e exec=$(k6exec) --out csv=results.csv
+  displayName: Run archived test
 
-  displayName: Run test
+- task: PublishPipelineArtifact@1
+  inputs:
+    path: $(archiveTestFile)
+    artifact: $(archiveTestFile)
+  displayName: Publish test archive to build
 
-- bash: |
-
-  displayName: Publish test to build
-
-- bash: |
-  
-  displayName: Run CI test {{testName}} from archive
-
-- bash: |
-  
-  displayName: Run Regression CI test
+- task: PublishPipelineArtifact@1
+  inputs:
+    path: $(archiveTestFile)
+    artifact: $(archiveTestFile)
+  displayName: Publish test results to build
