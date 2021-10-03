@@ -1,72 +1,75 @@
 schedules:
-- cron: "0 0 * * *" 
-  displayName: Daly midnight build for regression
-  branches:
-    include: 
-      - master
-  always: true
+  - cron: "0 0 * * *"
+    displayName: Daly midnight build for regression
+    branches:
+      include:
+        - master
+    always: true
 
 trigger:
   branches:
     include:
-    - master
-    - story/perf/*
+      - master
+      - story/perf/*
     exclude:
-    - develop
+      - develop
 pr:
   - master
   - story/perf/*
 
-pool: 
+pool:
   vmImage: ubuntu-latest
 
 variables:
   inputTestFile: k6_ci_runner.js
   archiveTestFile: $(inputTestFile).tar
   dockerTestDir: k6_tests
-  ${{ if or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'Schedule')) }}: 
+  ${{ if or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'Schedule')) }}:
     mode: regression
     k6exec: regression
-  ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}:
+  ${{ if and(eq(variables['Build.Reason'], 'IndividualCI'),ne(variables['Build.SourceBranchName'], 'regression')) }}:
     mode: ci
     k6exec: $(Build.SourceBranchName)
-
+  ${{ if and(eq(variables['Build.Reason'], 'IndividualCI'),eq(variables['Build.SourceBranchName'], 'regression')) }}:
+    mode: regression
+    k6exec: regression
+    
 steps:
-- bash: |
-    echo "We will us '$(k6exec)' as k6 exec function"
-    echo "Build triggered because of $(Build.Reason)"
-  displayName: Auto detect test to run
-- bash: |
-    mkdir -p $(pwd)/$(dockerTestDir) && ls -alh
-    sudo groupadd -g 12345 k6
-    sudo useradd -u 12345 k6 -g k6
-    sudo chown k6:k6 $(pwd)/$(dockerTestDir) #to prevent write issues in container 
-  displayName: Configure docker permissions
-- pwsh: |
+  - bash: |
+      echo "We will us '$(k6exec)' as k6 exec function"
+      echo "Build triggered because of $(Build.Reason)"
+    displayName: Auto detect test to run
+  - bash: |
+      mkdir -p $(pwd)/$(dockerTestDir) && ls -alh
+      sudo groupadd -g 12345 k6
+      sudo useradd -u 12345 k6 -g k6
+      sudo chown k6:k6 $(pwd)/$(dockerTestDir) #to prevent write issues in container
+    displayName: Configure docker permissions
+  - pwsh: |
       $command = "docker run --rm --entrypoint /bin/sh -i -v ${PWD}:/home/k6 loadimpact/k6 -c 'k6 archive -O $(dockerTestDir)/$(archiveTestFile) --include-system-env-vars=false  $(inputTestFile)'"
       Write-Host "Running:"
       Write-Host $command
       Invoke-Expression $command
       Write-Host "Files:"; ls
-  displayName: Create test archive 
-    
-- task: k6-load-test@0
-  condition: succeeded()
-  inputs:
-    filename: $(dockerTestDir)/$(archiveTestFile) 
-    args: -e mode=$(mode) -e exec=$(k6exec) --out csv=results.csv
-  displayName: Run archived test
+    displayName: Create test archive
 
-- task: PublishPipelineArtifact@1
-  condition: always()
-  inputs:
-    path: $(dockerTestDir)/$(archiveTestFile)
-    artifact: $(archiveTestFile)
-  displayName: Publish test archive to build
+  - task: k6-load-test@0
+    condition: succeeded()
+    inputs:
+      filename: $(dockerTestDir)/$(archiveTestFile)
+      args: -e mode=$(mode) -e exec=$(k6exec) --out csv=results.csv
+    displayName: Run archived test
 
-- task: PublishPipelineArtifact@1
-  condition: always()
-  inputs:
-    path: results.csv
-    artifact: results.csv
-  displayName: Publish test results to build
+  - task: PublishPipelineArtifact@1
+    condition: always()
+    inputs:
+      path: $(dockerTestDir)/$(archiveTestFile)
+      artifact: $(archiveTestFile)
+    displayName: Publish test archive to build
+
+  - task: PublishPipelineArtifact@1
+    condition: always()
+    inputs:
+      path: results.csv
+      artifact: results.csv
+    displayName: Publish test results to build
