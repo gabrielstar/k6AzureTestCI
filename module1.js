@@ -11,6 +11,6 @@ export function module1Test(){
 }
 
 //each module has default export too
-export default function somename(){ 
+export default function ci_check(){ 
   module1Test();
 }
