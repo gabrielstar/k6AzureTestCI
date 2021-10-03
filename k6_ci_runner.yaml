@@ -54,20 +54,20 @@ steps:
 - task: k6-load-test@0
   condition: succeeded()
   inputs:
-    filename: $(archiveTestFile)
+    filename: $(dockerTestDir)/$(archiveTestFile)
     args: -e mode=$(mode) -e exec=$(k6exec) --out csv=results.csv
   displayName: Run archived test
 
 - task: PublishPipelineArtifact@1
   condition: succeeded()
   inputs:
-    path: $(archiveTestFile)
+    path: $(dockerTestDir)/$(archiveTestFile)
     artifact: $(archiveTestFile)
   displayName: Publish test archive to build
 
 - task: PublishPipelineArtifact@1
   condition: succeeded()
   inputs:
-    path: $(archiveTestFile)
-    artifact: $(archiveTestFile)
+    path: results.csv
+    artifact: results.csv
   displayName: Publish test results to build
