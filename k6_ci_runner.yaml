@@ -16,7 +16,7 @@ pool:
 variables:
   inputTestFile: k6_ci_runner.js
   archiveTestFile: $(inputTestFile).tar
-  dockerTestDir: k6
+  dockerTestDir: k7
   ${{ if eq(variables['Build.Reason'], 'PullRequest') }}: 
     mode: regression
   ${{ if eq(variables['Build.Reason'], 'IndividualCI') }}:
@@ -50,8 +50,8 @@ steps:
       ls
   displayName: Create test archive 
 - bash: |
-    ls -alh k6
-    cp k6/* .
+    ls -alh k7
+    cp k7/* .
     
 - task: k6-load-test@0
   inputs:
