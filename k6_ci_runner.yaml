@@ -12,6 +12,7 @@ trigger:
       - master
       - story/perf/*
 pr:
+  - master
   - story/perf/*
 
 pool:
