@@ -3,12 +3,14 @@ import { check, fail, group, sleep } from "k6";
 import tagForTest from "./module1.js"; //import default function
 import tagForTest2 from "./module2.js"; //import default function
 import myNewTest from "./newmodule.js"; //import default function
+import mojTest from "./module3.js"; //import default function
 
 //functions to run as regression check
 const regressionTests = [
   { module: "module1", test: tagForTest, name: "tagForTest" },
   { module: "module2", test: tagForTest2, name: "tagForTest2" },
   { module: "newmodule", test: myNewTest, name: "myNewTest" },
+  { module: "module3", test: mojTest, name: "mojTest" },
 ];
 
 let testToRun = __ENV.exec || "myNewTest";
